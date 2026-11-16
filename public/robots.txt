@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Update the host if the final domain differs.
+Sitemap: https://lydion.energy/sitemap-index.xml

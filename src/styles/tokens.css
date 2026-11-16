@@ -1,0 +1,128 @@
+/* Design tokens. Dark is the default; light is the "printed plate" variant. */
+
+/* Newsreader, weight 400 only, optical-size axis kept. Built by scripts/subset-fonts.py. */
+@font-face {
+  font-family: 'Newsreader Variable';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/newsreader-400-opsz.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Newsreader Variable';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/newsreader-400-opsz-italic.woff2') format('woff2-variations');
+}
+
+/* Fallback faces scaled to the web fonts' metrics, so the swap does not shift layout. */
+@font-face {
+  font-family: 'Newsreader Fallback';
+  src: local('Georgia');
+  size-adjust: 102.9%;
+  ascent-override: 71.4%;
+  descent-override: 25.8%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Plex Sans Fallback';
+  src: local('Arial');
+  size-adjust: 100.6%;
+  ascent-override: 101.9%;
+  descent-override: 27.3%;
+  line-gap-override: 0%;
+}
+
+:root {
+  color-scheme: dark;
+
+  --bg: #14101b;
+  --bg-deep: #0f0c15;
+  --surface: #1c1625;
+  --plate: #f2ece1; /* paper behind white-background figures, both themes */
+  --ink: #ede4d3;
+  --ink-muted: #a79db1;
+  --ink-faint: #8f859b;
+  --rule: rgb(237 228 211 / 0.12);
+  --rule-strong: rgb(237 228 211 / 0.24);
+  --accent: #e0607e;
+  --accent-ink: #f08ca4; /* accent used as text: meets AA on --bg */
+  --accent-2: #e7a35a;
+
+  --flow-line: rgb(237 228 211 / 0.15);
+  --flow-tracer: rgb(237 228 211 / 0.26);
+  --flow-accent: #e0607e;
+
+  --mark-disc: var(--bg);
+  --mark-body: transparent;
+  --mark-glyph: var(--ink);
+
+  --font-display: 'Newsreader Variable', 'Newsreader Fallback', Georgia, serif;
+  --font-body: 'IBM Plex Sans Variable', 'Plex Sans Fallback', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --step--2: 0.75rem;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.4rem, 1.1rem + 0.9vw, 1.75rem);
+  --step-3: clamp(1.75rem, 1.2rem + 1.9vw, 2.6rem);
+  --step-4: clamp(2.25rem, 1.4rem + 3.4vw, 4rem);
+  --step-5: clamp(2.6rem, 1.2rem + 5.4vw, 5.6rem);
+
+  --gutter: clamp(16px, 4vw, 48px);
+  --maxw: 1240px;
+  --section-space: clamp(5rem, 3rem + 7vw, 9.5rem);
+  --header-h: 64px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --bg: #f2ece1;
+    --bg-deep: #ebe3d5;
+    --surface: #e9e1d3;
+    --plate: #fbf8f2;
+    --ink: #1a1421;
+    --ink-muted: #5b5163;
+    --ink-faint: #685e70;
+    --rule: rgb(26 20 33 / 0.13);
+    --rule-strong: rgb(26 20 33 / 0.26);
+    --accent: #a3324f;
+    --accent-ink: #9c2c49;
+    --accent-2: #85490c;
+    --flow-line: rgb(42 30 56 / 0.16);
+    --flow-tracer: rgb(42 30 56 / 0.24);
+    --flow-accent: #b3375a;
+    --mark-disc: #f7f4ef;
+    --mark-body: #f4ede3;
+    --mark-glyph: #3d3540;
+  }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f2ece1;
+  --bg-deep: #ebe3d5;
+  --surface: #e9e1d3;
+  --plate: #fbf8f2;
+  --ink: #1a1421;
+  --ink-muted: #5b5163;
+  --ink-faint: #685e70;
+  --rule: rgb(26 20 33 / 0.13);
+  --rule-strong: rgb(26 20 33 / 0.26);
+  --accent: #a3324f;
+  --accent-ink: #9c2c49;
+  --accent-2: #85490c;
+  --flow-line: rgb(42 30 56 / 0.16);
+  --flow-tracer: rgb(42 30 56 / 0.24);
+  --flow-accent: #b3375a;
+  --mark-disc: #f7f4ef;
+  --mark-body: #f4ede3;
+  --mark-glyph: #3d3540;
+}

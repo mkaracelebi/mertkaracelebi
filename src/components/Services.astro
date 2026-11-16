@@ -1,0 +1,168 @@
+---
+import SectionHead from './SectionHead.astro';
+
+const services = [
+  {
+    verb: 'Build',
+    title: 'Power system software',
+    summary: 'Custom tools for engineers who have outgrown spreadsheets and hand-run simulations.',
+    items: [
+      'Simulation and analysis tooling in Python and Julia',
+      'Automated study workflows around DIgSILENT PowerFactory and open-source solvers',
+      'Machine learning models packaged as tools that operators and planners can actually use',
+      'Data pipelines from simulations and measurements to decisions',
+    ],
+  },
+  {
+    verb: 'Study',
+    title: 'Dynamic studies and analysis',
+    summary: 'Clear answers on how a grid behaves when something goes wrong, and what to do about it.',
+    items: [
+      'RMS and EMT stability studies',
+      'Dynamic model building, tuning and validation',
+      'Frequency, voltage and oscillation stability with high shares of wind, solar and storage',
+      'Contingency screening, cascading-failure and blackout risk analysis',
+      'Strategic grid studies: e-mobility on distribution grids, DER management, offshore wind connection',
+    ],
+  },
+  {
+    verb: 'Advise',
+    title: 'Consultancy, advisory and project management',
+    summary: 'Senior technical judgement, from a two-day review to a multi-year programme.',
+    items: [
+      'Software consultancy: architecture, code and model review, tool selection',
+      'AI in energy: feasibility studies, technical due diligence, roadmaps',
+      'Scientific advisory for companies, grid operators and research consortia, including proposals',
+      'Project management for R&D that spans academia and industry',
+      'Training on machine learning for electrical engineers',
+    ],
+  },
+];
+---
+
+<section class="section" id="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <SectionHead index="01" label="Services">
+      <h2 id="services-title">Three ways to work with Lydion.</h2>
+      <p>
+        Software, studies and advice for the people who plan, operate and build electricity grids:
+        system operators, developers, equipment makers, and the research teams working with them.
+      </p>
+    </SectionHead>
+
+    <ol class="services" role="list">
+      {
+        services.map((s, i) => (
+          <li class="service">
+            <p class="label verb">
+              <span class="num">{String(i + 1).padStart(2, '0')}</span> {s.verb}
+            </p>
+            <h3>{s.title}</h3>
+            <p class="summary">{s.summary}</p>
+            <ul role="list">
+              {s.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="closing">
+      Every engagement is run by Mert directly. You keep the code, the models and the reports.
+    </p>
+  </div>
+</section>
+
+<style>
+  .services {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .service {
+    padding: 28px clamp(18px, 2.4vw, 36px) 8px;
+    border-left: 1px solid var(--rule);
+  }
+
+  .service:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .service:last-child {
+    padding-right: 0;
+  }
+
+  .verb {
+    display: flex;
+    gap: 0.8em;
+    margin-bottom: 26px;
+  }
+
+  .num {
+    color: var(--accent-ink);
+  }
+
+  h3 {
+    font-size: var(--step-3);
+    line-height: 1.08;
+    max-width: 16ch;
+  }
+
+  .summary {
+    margin-top: 16px;
+    color: var(--ink-muted);
+    min-height: 4.8em;
+  }
+
+  ul {
+    list-style: none;
+    margin-top: 22px;
+  }
+
+  ul li {
+    padding: 12px 0;
+    border-top: 1px solid var(--rule);
+    font-size: 0.97rem;
+    line-height: 1.5;
+  }
+
+  .closing {
+    margin-top: clamp(40px, 5vw, 64px);
+    padding-top: 22px;
+    border-top: 1px solid var(--rule-strong);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.35;
+    max-width: 34ch;
+  }
+
+  @media (max-width: 980px) {
+    .services {
+      grid-template-columns: 1fr;
+    }
+
+    .service,
+    .service:first-child,
+    .service:last-child {
+      border-left: 0;
+      padding: 28px 0 16px;
+    }
+
+    .service + .service {
+      border-top: 1px solid var(--rule-strong);
+    }
+
+    .summary {
+      min-height: 0;
+    }
+
+    h3 {
+      max-width: none;
+    }
+  }
+</style>

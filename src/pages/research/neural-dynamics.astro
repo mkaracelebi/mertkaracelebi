@@ -1,0 +1,609 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import FrequencyDemo from '../../components/FrequencyDemo.astro';
+import PublicationItem from '../../components/PublicationItem.astro';
+import { publications } from '../../data/publications';
+import { site } from '../../data/site';
+
+import eventFig from '../../assets/research/frequency-event.png';
+import ondfFig from '../../assets/research/online-decentralised.png';
+import samplingFig from '../../assets/research/collocation-sampling.png';
+import bessFig from '../../assets/research/bess-early-activation.png';
+import sipsFig from '../../assets/research/sips-activation.png';
+import confFig from '../../assets/research/confidence-threshold.png';
+
+const papers = publications.filter((p) =>
+  ['karacelebi2025ondf', 'karacelebi2025frequency'].includes(p.id),
+);
+
+const training = [
+  ['Adjoint sensitivity', 'None', '4.17', '0.523', '0.94', '0.23'],
+  ['Collocation', 'None', '39.2', '17.6', '0.05', '0.12'],
+  ['Adjoint sensitivity', 'Random', '3.44', '0.32', '0.96', '0.15'],
+  ['Adjoint sensitivity', 'Collocation-weighted', '4.87', '0.55', '0.94', '0.14'],
+];
+
+const videos = [
+  {
+    src: 'node-warm-start',
+    title: 'Warm start',
+    text: 'Pretraining gets the model close quickly. The rest of training is spent on the oscillatory periods.',
+  },
+  {
+    src: 'node-undamped',
+    title: 'Undamped oscillations',
+    text: 'The model learns the simple dynamics first, then finds and adapts to the critical oscillation.',
+  },
+  {
+    src: 'node-damped',
+    title: 'Damped oscillations',
+    text: 'The damping is already in the measurements, and the forecast picks it up within a few epochs.',
+  },
+];
+---
+
+<Base
+  title="Learning grid dynamics while they happen"
+  description="Neural ordinary differential equations that learn a power system's dynamics from post-fault measurements in near real time, for frequency monitoring, dynamic security assessment and emergency control."
+>
+  <article>
+    <header class="intro">
+      <div class="wrap grid">
+        <p class="label crumb">
+          <a href="/">Lydion Energy</a> <span aria-hidden="true">/</span>
+          <a href="/research/">Research</a> <span aria-hidden="true">/</span> Neural dynamics
+        </p>
+        <div class="head">
+          <h1>Learning grid dynamics <em>while they happen</em>.</h1>
+          <p class="lede">
+            Neural ordinary differential equations for online dynamic security assessment. Research by Mert
+            Karaçelebi and Jochen Cremer in the Intelligent Electrical Power Grids group at TU Delft.
+          </p>
+          <p class="mono links">
+            <a href="#papers">The two papers</a>
+            <a href={site.links.nodeProject}>Full interactive project site</a>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="problem">
+      <div class="wrap grid">
+        <h2 id="problem" class="label side"><span class="n">01</span> The problem</h2>
+        <div class="body prose">
+          <p class="lede">
+            After a severe disturbance, a grid has seconds. Lower inertia means it falls further, faster.
+          </p>
+          <p>
+            Losing a large generator or a major line opens a gap between generation and demand, and frequency
+            drops. Protection arrests it at the nadir. If the nadir crosses critical limits, more generation
+            disconnects and the system can black out. Inverter-based generation makes the dynamics both faster
+            and harder to model.
+          </p>
+          <p>Operators need to know, within seconds, where the system is heading. The usual tools struggle with:</p>
+          <ul class="ticks" role="list">
+            <li>the computational cost of detailed simulation;</li>
+            <li>poor generalisation of offline-trained models to unseen conditions and topologies;</li>
+            <li>data limits: dimensionality, changing topology and the variety of dynamic events;</li>
+            <li>uncertainty about the size and location of the disturbance.</li>
+          </ul>
+        </div>
+        <figure class="fig wide-fig">
+          <div class="plate">
+            <Image
+              src={eventFig}
+              alt="Frequency after an event. Left of a dotted line, measurements are used for event analysis and model training. Right of it, the online model predicts the trajectory, including the nadir and recovery period, for security assessment."
+              widths={[640, 960, 1400]}
+              sizes="(max-width: 900px) 94vw, 820px"
+            />
+          </div>
+          <figcaption class="mono">
+            Measurements from the first seconds train the model; the trained model then predicts the nadir and
+            recovery. The online model tracks the measured frequency, the offline simulation does not.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="try">
+      <div class="wrap grid">
+        <h2 id="try" class="label side"><span class="n">02</span> Try it</h2>
+        <div class="body">
+          <p class="lede intro-lede">
+            Inertia sets how fast frequency falls. Fast reserves set how far. The earlier a battery acts, the
+            shallower the nadir, which is why a forecast that arrives a second early is worth having.
+          </p>
+          <FrequencyDemo />
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="method">
+      <div class="wrap grid">
+        <h2 id="method" class="label side"><span class="n">03</span> The method</h2>
+        <div class="body prose">
+          <p class="lede">
+            A neural ODE learns the right-hand side of <span class="eq">dx/dt = f<sub>θ</sub>(x, t)</span> from
+            measurements. A standard ODE solver then produces the trajectory.
+          </p>
+          <p>
+            That gives continuous-time predictions, adaptive computation and memory-efficient training, and it
+            does not need to know when, where or what the disturbance was.
+          </p>
+          <h3>Online and decentralised</h3>
+          <p>
+            The Online Neural Dynamics Forecaster does not model the whole grid. Pretrained NODEs sit at
+            measurement points such as large generators. After an event each one retrains on its own local
+            post-fault measurements over a moving window, so it follows cascading effects and control actions as
+            they happen. Only model parameters travel to the operator, which keeps data transfer small, and the
+            validation error doubles as a confidence index.
+          </p>
+        </div>
+        <figure class="fig narrow-fig">
+          <div class="plate">
+            <Image
+              src={ondfFig}
+              alt="Transmission grid diagram. Three generators, outlined in red, each run their own neural ODE. Their parameters and initial states go to the system operator, which runs dynamics monitoring, dynamic security assessment and corrective control."
+              widths={[480, 743]}
+              sizes="(max-width: 900px) 94vw, 620px"
+            />
+          </div>
+          <figcaption class="mono">Decentralised NODEs at three generators report to the system operator.</figcaption>
+        </figure>
+
+        <div class="body prose">
+          <h3>Training fast enough to matter</h3>
+          <p>
+            Adjoint sensitivity is the standard way to train a NODE. The collocation method instead estimates
+            derivatives straight from the data and fits the network to them: much faster, but it fails on
+            complex dynamics. The work combines the two. The collocation error decides where training points
+            are sampled, so the slower adjoint training spends its effort where the trajectory is hard.
+          </p>
+        </div>
+        <figure class="fig wide-fig">
+          <div class="plate">
+            <Image
+              src={samplingFig}
+              alt="Three panels. (a) A simulated trajectory with training points concentrated where the error is large. (b) Collocation-based derivatives against the neural network output, with their difference shaded. (c) The absolute error used as sampling weights."
+              widths={[640, 960, 1400]}
+              sizes="(max-width: 900px) 94vw, 820px"
+            />
+          </div>
+          <figcaption class="mono">
+            Training points are drawn at random, weighted by the gap between collocation derivatives and the
+            network output.
+          </figcaption>
+        </figure>
+
+        <div class="body">
+          <div class="table-scroll" tabindex="0" role="region" aria-labelledby="training-cap">
+            <table>
+              <caption id="training-cap" class="mono">
+                Training method against sampling strategy. DFD is the discrete Fréchet distance, the largest
+                time-independent error. Lower is better for MSE, DFD and time.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Training</th>
+                  <th scope="col">Sampling</th>
+                  <th scope="col" class="num">MSE</th>
+                  <th scope="col" class="num">DFD</th>
+                  <th scope="col" class="num">R²</th>
+                  <th scope="col" class="num">s per epoch</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  training.map((r) => (
+                    <tr>
+                      <td>{r[0]}</td>
+                      <td>{r[1]}</td>
+                      <td class="num">{r[2]}</td>
+                      <td class="num">{r[3]}</td>
+                      <td class="num">{r[4]}</td>
+                      <td class="num">{r[5]}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="note muted">
+            Sampling cuts training time per epoch from 0.23 s to about 0.15 s at similar accuracy. Collocation on
+            its own is fastest but cannot follow these dynamics (R² of 0.05).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cases">
+      <div class="wrap grid">
+        <h2 id="cases" class="label side"><span class="n">04</span> Case studies</h2>
+        <div class="body prose">
+          <p>
+            Test systems were simulated in DIgSILENT PowerFactory 2024 and PowerSimulationsDynamics.jl, some
+            modified with inverter-based generation and its controllers. Initial conditions vary generation and
+            demand. Disturbances are three-phase short circuits of varying impedance, duration and location, and
+            the models are told none of it.
+          </p>
+        </div>
+
+        <div class="body pair">
+          <figure class="fig">
+            <div class="plate">
+              <Image
+                src={bessFig}
+                alt="Frequency against time. With threshold activation the battery engages late and under-frequency load shedding still activates. With NODE-based activation the battery engages earlier and frequency stays above the limit."
+                widths={[480, 760, 1100]}
+                sizes="(max-width: 900px) 94vw, 440px"
+              />
+            </div>
+            <figcaption>
+              <strong>A battery that acts early.</strong> Both runs activate the same battery. Triggered by the
+              forecast, it acts early enough to avoid under-frequency load shedding.
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <div class="plate">
+              <Image
+                src={sipsFig}
+                alt="Frequency against time in a severe event. Without action, generation disconnects and the system collapses near 16 seconds. With a system integrity protection scheme triggered by the NODE, frequency recovers towards nominal."
+                widths={[480, 760, 1100]}
+                sizes="(max-width: 900px) 94vw, 440px"
+              />
+            </div>
+            <figcaption>
+              <strong>Islanding before collapse.</strong> A severe event drives frequency below the machines’
+              limits. The forecast triggers a protection scheme that disconnects a predefined region, and the rest
+              of the system recovers.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="body prose">
+          <p>
+            The trigger has to be trustworthy. It fires only after the validation error has stayed below a
+            confidence threshold over repeated training epochs.
+          </p>
+        </div>
+        <figure class="fig wide-fig">
+          <div class="plate">
+            <Image
+              src={confFig}
+              alt="Two panels of mean absolute frequency error against training epochs, for the two examples. Validation error in red falls below a dashed confidence threshold after a few epochs."
+              widths={[640, 960, 1400]}
+              sizes="(max-width: 900px) 94vw, 820px"
+            />
+          </div>
+          <figcaption class="mono">Validation error (red) and training error (black) against the confidence threshold.</figcaption>
+        </figure>
+
+        <div class="body">
+          <h3 class="label vid-title">Learning oscillations, epoch by epoch</h3>
+          <p class="muted vid-note">
+            Modified IEEE 9-bus system, one synchronous generator replaced by an inverter-based unit. One NODE
+            tracks angle, voltage and speed of both non-slack generators. Solid lines are predictions, dotted lines
+            the simulated truth, scaled for display.
+          </p>
+          <div class="videos">
+            {
+              videos.map((v) => (
+                <figure class="fig">
+                  <div class="plate">
+                    <video
+                      data-autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                      data-poster={`/media/${v.src}.webp`}
+                      width="600"
+                      height="400"
+                      aria-label={`${v.title}: training animation`}
+                    >
+                      <source src={`/media/${v.src}.mp4`} type="video/mp4" />
+                    </video>
+                  </div>
+                  <figcaption>
+                    <strong>{v.title}.</strong> {v.text}
+                  </figcaption>
+                </figure>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="papers" aria-labelledby="papers-title">
+      <div class="wrap grid">
+        <h2 id="papers-title" class="label side"><span class="n">05</span> Papers</h2>
+        <ol class="body plist" role="list">
+          {papers.map((p) => <PublicationItem pub={p} />)}
+        </ol>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<script>
+  // Play the training animations only while visible, and never for reduced-motion users.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const vids = document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]');
+
+  // Posters load only as the videos come near, so they do not compete with the top of the page.
+  const posterIo = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const v = e.target as HTMLVideoElement;
+        if (v.dataset.poster) v.poster = v.dataset.poster;
+        posterIo.unobserve(v);
+      }
+    },
+    { rootMargin: '600px 0px' },
+  );
+  vids.forEach((v) => posterIo.observe(v));
+
+  if (reduce.matches) {
+    vids.forEach((v) => (v.controls = true));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) v.play().catch(() => (v.controls = true));
+          else v.pause();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    vids.forEach((v) => io.observe(v));
+  }
+</script>
+
+<style>
+  .intro {
+    padding-block: clamp(56px, 8vw, 120px) clamp(48px, 6vw, 88px);
+  }
+
+  .crumb {
+    grid-column: 1 / span 3;
+    padding-top: 1.2em;
+  }
+
+  .crumb a {
+    text-decoration: none;
+  }
+
+  .crumb a:hover {
+    text-decoration: underline;
+  }
+
+  .head {
+    grid-column: 4 / -1;
+  }
+
+  h1 {
+    font-size: var(--step-5);
+    max-width: 14ch;
+  }
+
+  h1 em {
+    font-style: italic;
+  }
+
+  .head .lede {
+    margin-top: 28px;
+    max-width: 40rem;
+    color: var(--ink-muted);
+  }
+
+  .links {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+  }
+
+  .side {
+    grid-column: 1 / span 3;
+    padding-top: 0.5em;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+
+  .side .n {
+    color: var(--accent-ink);
+    margin-right: 0.6em;
+  }
+
+  .body,
+  .fig {
+    grid-column: 4 / -1;
+  }
+
+  .body + .body,
+  .fig + .body,
+  .body + .fig {
+    margin-top: clamp(32px, 4vw, 56px);
+  }
+
+  .narrow-fig {
+    max-width: 640px;
+  }
+
+  .wide-fig {
+    max-width: 780px;
+  }
+
+  .prose .lede {
+    margin-bottom: 1em;
+  }
+
+  .intro-lede {
+    max-width: 40rem;
+    margin-bottom: 32px;
+  }
+
+  .prose h3 {
+    font-size: var(--step-2);
+    margin: 1.6em 0 0.6em;
+  }
+
+  .eq {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    white-space: nowrap;
+  }
+
+  .ticks {
+    list-style: none;
+    margin-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .ticks li {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .fig {
+    margin-inline: 0;
+    margin-bottom: 0;
+  }
+
+  .fig figcaption {
+    margin-top: 12px;
+    color: var(--ink-muted);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    max-width: 64ch;
+  }
+
+  .fig figcaption.mono {
+    font-size: 12px;
+  }
+
+  .fig figcaption strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .pair,
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .pair .fig,
+  .videos .fig {
+    grid-column: auto;
+  }
+
+  .videos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .vid-title {
+    margin-bottom: 10px;
+  }
+
+  .vid-note {
+    max-width: 64ch;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+  }
+
+  video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    background: #fff;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  caption {
+    text-align: left;
+    caption-side: bottom;
+    padding-top: 12px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 11px 16px 11px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  thead th {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .num {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody tr:last-child td {
+    color: var(--ink);
+  }
+
+  .note {
+    margin-top: 16px;
+    max-width: 64ch;
+    font-size: 0.95rem;
+  }
+
+  .plist {
+    list-style: none;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  @media (max-width: 1000px) {
+    .videos {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .crumb,
+    .head,
+    .side,
+    .body,
+    .fig {
+      grid-column: 1 / -1;
+    }
+
+    .side {
+      position: static;
+      margin-bottom: 18px;
+    }
+
+    .pair {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

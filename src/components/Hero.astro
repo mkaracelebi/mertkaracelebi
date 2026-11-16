@@ -1,0 +1,158 @@
+---
+import { markSvg } from '../lib/mark.js';
+import { site } from '../data/site';
+
+const mark = markSvg({ variant: 'line', strokePx: 1.2, title: 'Lydion Energy mark' });
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <canvas class="hero-flow" data-flow aria-hidden="true"></canvas>
+  <div class="hero-mark" data-flow-obstacle set:html={mark} />
+
+  <div class="wrap hero-inner">
+    <p class="label kicker">{site.name} <span aria-hidden="true">·</span> {site.locationShort}</p>
+    <h1 id="hero-title">Software and studies for power system <em>dynamics</em>.</h1>
+    <p class="lede">
+      {site.name} is the independent practice of {site.founder.name}, a power systems engineer and
+      researcher at TU Delft. It builds software for grid analysis, runs RMS and EMT stability studies,
+      and advises teams putting AI to work in energy systems.
+    </p>
+    <p class="links">
+      <a class="arrow-link" href="#services">Services</a>
+      <a class="arrow-link" href="#about">About Mert</a>
+    </p>
+  </div>
+
+  <p class="caption mono" aria-hidden="true">
+    Streamlines of a potential flow with circulation around the Lydion disc, integrated live with RK4.
+  </p>
+</section>
+
+<script>
+  import { initFlowField } from '../scripts/flowfield';
+  initFlowField();
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: clamp(640px, calc(100svh - var(--header-h)), 980px);
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero-flow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+  }
+
+  .hero-mark {
+    position: absolute;
+    z-index: -1;
+    width: clamp(260px, 29vw, 430px);
+    aspect-ratio: 1;
+    right: max(var(--gutter), calc((100vw - var(--maxw)) / 2 + 10px));
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink);
+    --mark-disc: var(--bg);
+    --mark-body: transparent;
+  }
+
+  .hero-mark :global(svg) {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+
+  .hero-inner {
+    padding-block: clamp(56px, 8vw, 120px);
+  }
+
+  /* A soft halo in the background colour keeps text clear of the lines behind it. */
+  .kicker,
+  h1,
+  .lede,
+  .links a {
+    text-shadow:
+      0 0 2px var(--bg),
+      0 0 8px var(--bg),
+      0 0 18px var(--bg);
+  }
+
+  .kicker {
+    margin-bottom: clamp(20px, 3vw, 36px);
+  }
+
+  h1 {
+    font-size: var(--step-5);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
+    max-width: 12.5ch;
+  }
+
+  h1 em {
+    font-style: italic;
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    margin-top: clamp(22px, 3vw, 34px);
+    max-width: 34rem;
+    color: var(--ink);
+  }
+
+  .links {
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+  }
+
+  .caption {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 18px;
+    max-width: 36ch;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  @media (max-width: 1100px) {
+    .lede {
+      max-width: 30rem;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      align-items: start;
+    }
+
+    .hero-mark {
+      width: clamp(200px, 50vw, 330px);
+      top: clamp(28px, 6vw, 56px);
+      right: -6vw;
+      transform: none;
+    }
+
+    .hero-inner {
+      padding-top: clamp(220px, 52vw, 380px);
+      padding-bottom: 72px;
+    }
+
+    .caption {
+      left: var(--gutter);
+      right: auto;
+      text-align: left;
+    }
+  }
+</style>

@@ -1,0 +1,262 @@
+---
+// Interactive frequency response demo. Static markup with sensible defaults,
+// enhanced by src/scripts/frequency.ts.
+const W = 720;
+const H = 360;
+const pad = { l: 52, r: 24, t: 22, b: 34 };
+const xTicks = [0, 5, 10, 15, 20];
+const X = (t: number) => pad.l + (t / 20) * (W - pad.l - pad.r);
+---
+
+<figure class="demo" data-freq-demo data-battery="true" data-safe="true">
+  <div class="controls">
+    <div class="ctl">
+      <label for="fd-H">Inertia constant <i>H</i></label>
+      <input id="fd-H" name="H" type="range" min="1.5" max="8" step="0.5" value="2.5" />
+      <output data-out="H" for="fd-H">2.5 s</output>
+    </div>
+    <div class="ctl">
+      <label for="fd-dP">Generation lost</label>
+      <input id="fd-dP" name="dP" type="range" min="4" max="14" step="1" value="10" />
+      <output data-out="dP" for="fd-dP">10 %</output>
+    </div>
+    <div class="ctl check">
+      <input id="fd-bat" name="battery" type="checkbox" checked />
+      <label for="fd-bat">Battery fast frequency response (3 % of demand)</label>
+    </div>
+    <div class="ctl">
+      <label for="fd-on">Battery activated after</label>
+      <input id="fd-on" name="tOn" type="range" min="0.2" max="4" step="0.1" value="0.6" />
+      <output data-out="tOn" for="fd-on">0.6 s</output>
+    </div>
+  </div>
+
+  <div class="plot plate-dark">
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="fd-title fd-desc">
+      <title id="fd-title">System frequency after losing generation</title>
+      <desc id="fd-desc">
+        Frequency in hertz over 20 seconds, with and without a battery, against the 49.0 hertz load shedding
+        limit. The numbers below the chart give the nadir for each case.
+      </desc>
+      <g data-yticks></g>
+      {
+        xTicks.map((t, i) => (
+          <text class="tick" x={X(t)} y={H - 10} text-anchor={i === xTicks.length - 1 ? 'end' : 'middle'} dx={i === xTicks.length - 1 ? 8 : 0}>
+            {i === xTicks.length - 1 ? `${t} s` : t}
+          </text>
+        ))
+      }
+      <text class="tick" x={pad.l - 10} y={pad.t - 2} text-anchor="end">Hz</text>
+      <line class="ufls" data-ufls x1={pad.l} x2={W - pad.r} y1="0" y2="0"></line>
+      <text class="ufls-label" data-ufls-label x={W - pad.r} y="0" text-anchor="end">UFLS stage 1, 49.0 Hz</text>
+      <line class="on-line" data-on x1="0" x2="0" y1={pad.t} y2={H - pad.b}></line>
+      <text class="on-label" data-on-label x="0" y={pad.t + 12}>battery on</text>
+      <path class="base" data-base d=""></path>
+      <path class="bat" data-bat d=""></path>
+    </svg>
+  </div>
+
+  <dl class="readout" aria-live="polite">
+    <div><dt>Nadir, no battery</dt><dd data-read="nadirBase">48.88 Hz</dd></div>
+    <div><dt>Nadir, with battery</dt><dd data-read="nadirBat">49.17 Hz</dd></div>
+    <div><dt>Initial RoCoF</dt><dd data-read="rocof">-1.00 Hz/s</dd></div>
+    <div class="verdict"><dd data-read="verdict">Frequency stays above 49.0 Hz. No load is shed.</dd></div>
+  </dl>
+
+  <figcaption class="mono">
+    Aggregated single-machine model: swing equation with load damping, a governor driving a reheat steam
+    turbine, and a battery that ramps to 3 % of demand once activated. Illustrative parameters, not a specific
+    grid. Solid line with battery, dashed line without.
+  </figcaption>
+</figure>
+
+<script>
+  import { initFrequencyDemo } from '../scripts/frequency';
+  document.querySelectorAll<HTMLElement>('[data-freq-demo]').forEach(initFrequencyDemo);
+</script>
+
+<style>
+  .demo {
+    margin: 0;
+    display: grid;
+    gap: 22px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 36px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .ctl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 6px 14px;
+  }
+
+  .ctl label {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  .ctl input[type='range'] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    accent-color: var(--accent);
+  }
+
+  .ctl output {
+    grid-row: 1;
+    grid-column: 2;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .check {
+    grid-template-columns: auto 1fr;
+    align-self: end;
+  }
+
+  .check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    margin: 0;
+  }
+
+  .check label {
+    color: var(--ink);
+  }
+
+  input:disabled {
+    opacity: 0.4;
+  }
+
+  .plot {
+    background: var(--surface);
+    padding: clamp(8px, 1.5vw, 18px);
+  }
+
+  .plot svg {
+    width: 100%;
+    height: auto;
+    font-family: var(--font-mono);
+  }
+
+  .plot :global(.grid-line) {
+    stroke: var(--rule);
+    stroke-width: 1;
+  }
+
+  .plot :global(.tick) {
+    fill: var(--ink-muted);
+    font-size: 12px;
+  }
+
+  .ufls {
+    stroke: var(--accent-2);
+    stroke-width: 1.2;
+    stroke-dasharray: 5 5;
+  }
+
+  .ufls-label {
+    fill: var(--accent-2);
+    font-size: 12px;
+  }
+
+  .on-line {
+    stroke: var(--ink-faint);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+  }
+
+  .on-label {
+    fill: var(--ink-muted);
+    font-size: 12px;
+  }
+
+  [data-battery='false'] .on-line,
+  [data-battery='false'] .on-label {
+    display: none;
+  }
+
+  .base {
+    fill: none;
+    stroke: var(--ink);
+    stroke-opacity: 0.55;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 5;
+  }
+
+  [data-battery='false'] .base {
+    stroke-dasharray: none;
+    stroke: var(--accent);
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+
+  .bat {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  .readout {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.6fr);
+    gap: 18px;
+    align-items: end;
+  }
+
+  .readout dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .readout dd {
+    margin: 4px 0 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+
+  .verdict dd {
+    font-size: var(--step-0);
+    font-family: var(--font-body);
+    padding-left: 14px;
+    border-left: 2px solid var(--accent-2);
+  }
+
+  [data-safe='true'] .verdict dd {
+    border-left-color: var(--ink-muted);
+  }
+
+  figcaption {
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 80ch;
+  }
+
+  @media (max-width: 760px) {
+    .controls {
+      grid-template-columns: 1fr;
+    }
+
+    .readout {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .verdict {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+// A short run of streamlines bending round a small disc, computed at build time
+// from the same potential flow as the hero.
+import { traceStreamline, toPath } from '../lib/flow.js';
+
+const W = 1240;
+const H = 64;
+const cx = W * 0.64;
+const cy = H / 2;
+const a = 9;
+const G = 4 * Math.PI * a * 0.3;
+const offsets = [-21, -14, -7, 7, 14, 21];
+const paths = offsets.map((dy) =>
+  toPath(
+    traceStreamline({ x0: -10, y0: cy + dy, cx, cy, a, G, h: 3, xEnd: W + 10, maxSteps: 900 }),
+  ),
+);
+---
+
+<div class="wrap divider" aria-hidden="true">
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" focusable="false">
+    {paths.map((d, i) => <path d={d} class={i === 2 ? 'accent' : ''} />)}
+    <circle cx={cx} cy={cy} r={a - 2.5} />
+  </svg>
+</div>
+
+<style>
+  .divider svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-opacity: 0.22;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  path.accent {
+    stroke: var(--accent);
+    stroke-opacity: 0.9;
+  }
+
+  circle {
+    fill: none;
+    stroke: var(--ink);
+    stroke-opacity: 0.5;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+</style>

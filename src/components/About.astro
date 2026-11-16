@@ -1,0 +1,258 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import CopyButton from './CopyButton.astro';
+import headshot from '../assets/people/mert-headshot.jpg';
+import whiteboard from '../assets/people/mert-delft.jpg';
+import { site } from '../data/site';
+
+const timeline = [
+  {
+    when: '2021 to now',
+    what: 'PhD researcher, TU Delft',
+    where: 'Intelligent Electrical Power Grids group and Delft AI Energy Lab. AI and optimisation for power system dynamics and security.',
+  },
+  {
+    when: '2019 to 2021',
+    what: 'Power System of the Future, Hitachi Energy',
+    where: 'Zurich, formerly ABB Power Grids. Strategic studies and internal consulting on e-mobility, grid resilience, DER management, hydrogen and offshore wind.',
+  },
+  {
+    when: '2018 to 2021',
+    what: 'MSc Electrical Engineering and Information Technology, ETH Zurich',
+    where: '',
+  },
+  {
+    when: '2017 to 2018',
+    what: 'Electrical engineer, Siemens',
+    where: 'Ankara, part-time. Energy management system deployments on Siemens Spectrum for Turkish distribution system operators.',
+  },
+  {
+    when: '2013 to 2018',
+    what: 'BSc Electrical and Electronics Engineering, METU',
+    where: 'Middle East Technical University, Ankara.',
+  },
+];
+
+const also = [
+  'Chapter lead, IEEE PES Technical Report TR-140, coordinating authors from universities, TSOs and research institutes in Europe and the Americas',
+  'Panel speaker, IEEE SGSMA 2026 in Santiago de Chile',
+  'Organising committee, DynPOWER 2024 workshop on dynamic stability of future grids, Delft',
+  'Co-developed the MSc course EE4C12 Machine Learning for Electrical Engineering and served as a head teaching assistant',
+  'Supervised MSc theses on probabilistic risk estimation and AI-based emergency frequency control',
+];
+
+const shortBio = `${site.founder.name} is the founder of ${site.name}, a Rotterdam-based practice for power system software, dynamic studies and AI in energy systems. He is a PhD researcher at TU Delft working on AI and optimisation for power system dynamics and security, and has worked with Hitachi Energy and Siemens. He holds an MSc from ETH Zurich and led a chapter of IEEE PES Technical Report TR-140 on data-driven methods for secure low-inertia grids.`;
+---
+
+<section class="section" id="about" aria-labelledby="about-title">
+  <div class="wrap">
+    <SectionHead index="04" label="About">
+      <h2 id="about-title">{site.founder.name}</h2>
+      <p>Founder of Lydion Energy. PhD candidate at TU Delft.</p>
+    </SectionHead>
+
+    <div class="grid body">
+      <figure class="portrait">
+        <div class="plate">
+          <Image
+            src={headshot}
+            alt="Portrait of Mert Karaçelebi."
+            widths={[360, 560, 720]}
+            sizes="(max-width: 900px) 70vw, 340px"
+            loading="lazy"
+          />
+        </div>
+      </figure>
+
+      <div class="text">
+        <div class="prose bio">
+          <p class="lede">
+            I like problems where the physics and the data have to agree, and where the answer is needed in
+            seconds rather than days.
+          </p>
+          <p>
+            I am a PhD researcher at TU Delft, where I work on AI and optimisation for power system dynamics
+            and security. I developed neural ODE methods that forecast how a grid behaves after a fault and
+            support emergency frequency control, and reinforcement learning that ranks N-k contingencies for
+            security assessment.
+          </p>
+          <p>
+            Before Delft I studied at ETH Zurich and METU, ran strategic grid studies at Hitachi Energy in
+            Zurich, and helped deploy energy management systems for Turkish distribution operators with
+            Siemens. I started Lydion Energy to bring what works in research into the tools and decisions of
+            the people who plan and run grids.
+          </p>
+          <p class="muted langs">Working languages: English and Turkish. Some German and Dutch.</p>
+        </div>
+
+        <h3 class="label sub">Path</h3>
+        <ol class="timeline" role="list">
+          {
+            timeline.map((t) => (
+              <li>
+                <span class="mono when">{t.when}</span>
+                <span class="what">
+                  {t.what}
+                  {t.where && <span class="where">{t.where}</span>}
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+
+        <h3 class="label sub">Also</h3>
+        <ul class="also" role="list">
+          {also.map((a) => <li>{a}</li>)}
+        </ul>
+
+        <div class="shortbio">
+          <div class="sb-head">
+            <h3 class="label">Short bio, for organisers and press</h3>
+            <CopyButton text={shortBio} label="Copy bio" />
+          </div>
+          <p>{shortBio}</p>
+        </div>
+      </div>
+    </div>
+
+    <figure class="wide">
+      <Image
+        src={whiteboard}
+        alt="Mert at a large screen showing a power system single-line diagram, marking up a zone boundary."
+        widths={[640, 1024, 1440, 1920]}
+        sizes="(max-width: 1300px) 94vw, 1240px"
+        loading="lazy"
+      />
+      <figcaption class="mono">Working through a single-line diagram. Photo: {site.photoCredit}.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .body {
+    row-gap: 40px;
+  }
+
+  .portrait {
+    grid-column: 1 / span 4;
+    margin: 0;
+  }
+
+  .portrait .plate {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .text {
+    grid-column: 6 / -1;
+  }
+
+  .bio .lede {
+    margin-bottom: 1.2em;
+  }
+
+  .langs {
+    font-size: var(--step--1);
+  }
+
+  .sub {
+    margin: 52px 0 16px;
+  }
+
+  .timeline,
+  .also {
+    list-style: none;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .timeline li {
+    display: grid;
+    grid-template-columns: 9.5em 1fr;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .when {
+    color: var(--ink-muted);
+    padding-top: 0.15em;
+  }
+
+  .what {
+    display: grid;
+    gap: 4px;
+  }
+
+  .where {
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+
+  .also li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .shortbio {
+    margin-top: 52px;
+    padding: clamp(18px, 2.4vw, 28px);
+    background: var(--surface);
+  }
+
+  .sb-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .shortbio p {
+    font-size: 0.97rem;
+  }
+
+  .wide {
+    margin: clamp(64px, 8vw, 112px) 0 0;
+  }
+
+  .wide img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+    object-position: 30% 40%;
+  }
+
+  .wide figcaption {
+    margin-top: 12px;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 900px) {
+    .portrait,
+    .text {
+      grid-column: 1 / -1;
+    }
+
+    .portrait {
+      max-width: 340px;
+    }
+
+    .portrait .plate {
+      position: static;
+    }
+
+    .timeline li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .wide img {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

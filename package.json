@@ -1,0 +1,27 @@
+{
+  "name": "lydion-energy",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/check-copy.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "og": "node scripts/og.mjs",
+    "check:copy": "node scripts/check-copy.mjs",
+    "deploy": "astro build && npx wrangler deploy"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.5",
+    "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "astro": "^7.4.12"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@resvg/resvg-js": "^2.6.2",
+    "typescript": "^6.0.3"
+  }
+}

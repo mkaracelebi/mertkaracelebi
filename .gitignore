@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.DS_Store
+.env
+.env.*
+
+# Source material dropped in for the build. Processed copies live in src/assets.
+*.docx
+IMG_*
+logo_02.png

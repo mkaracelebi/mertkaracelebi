@@ -1,0 +1,162 @@
+---
+import Wordmark from './Wordmark.astro';
+import Divider from './Divider.astro';
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+const { kvk, btw } = site.company;
+---
+
+<footer class="site-footer">
+  <Divider />
+  <div class="wrap foot grid">
+    <div class="brand">
+      <Wordmark size="lg" />
+      <p class="muted small">{site.tagline}</p>
+    </div>
+
+    <dl class="facts mono">
+      <div><dt>Based in</dt><dd>{site.location}</dd></div>
+      {kvk && <div><dt>KvK</dt><dd>{kvk}</dd></div>}
+      {btw && <div><dt>BTW</dt><dd>{btw}</dd></div>}
+      {site.email && (
+        <div>
+          <dt>Email</dt>
+          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+        </div>
+      )}
+    </dl>
+
+    <div class="meta mono">
+      <p>© {year} {site.name}</p>
+      <p class="muted">Photo of Mert at the whiteboard: {site.photoCredit}.</p>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-live="polite">
+        <span class="tt-dot" aria-hidden="true"></span>
+        <span data-theme-label>Switch theme</span>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const root = document.documentElement;
+  const btn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const label = document.querySelector<HTMLElement>('[data-theme-label]');
+  const media = window.matchMedia('(prefers-color-scheme: light)');
+
+  const effective = () =>
+    (root.dataset.theme as 'light' | 'dark' | undefined) ?? (media.matches ? 'light' : 'dark');
+
+  const render = () => {
+    if (label) label.textContent = effective() === 'dark' ? 'Light theme' : 'Dark theme';
+  };
+
+  btn?.addEventListener('click', () => {
+    const next = effective() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      /* storage can be unavailable; the switch still applies for this visit */
+    }
+    render();
+    window.dispatchEvent(new CustomEvent('themechange'));
+  });
+
+  media.addEventListener('change', () => {
+    render();
+    window.dispatchEvent(new CustomEvent('themechange'));
+  });
+  render();
+</script>
+
+<style>
+  .site-footer {
+    padding-bottom: 48px;
+  }
+
+  .foot {
+    padding-top: 40px;
+    row-gap: 32px;
+    align-items: start;
+  }
+
+  .brand {
+    grid-column: 1 / span 5;
+    display: grid;
+    gap: 14px;
+  }
+
+  .small {
+    font-size: var(--step--1);
+  }
+
+  .facts {
+    grid-column: 6 / span 4;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .facts div {
+    display: grid;
+    grid-template-columns: 7.5em 1fr;
+    gap: 12px;
+  }
+
+  dt {
+    color: var(--ink-muted);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .meta {
+    grid-column: 10 / span 3;
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+  }
+
+  .meta p + p {
+    margin-top: 0;
+  }
+
+  .theme-toggle {
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: 1px solid var(--rule-strong);
+    padding: 7px 12px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--ink);
+  }
+
+  .tt-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  }
+
+  @media (max-width: 900px) {
+    .brand,
+    .facts,
+    .meta {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

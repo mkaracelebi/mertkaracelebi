@@ -1,0 +1,165 @@
+---
+import CopyButton from './CopyButton.astro';
+import { type Publication, doiUrl, isMert, toBibtex } from '../data/publications';
+
+interface Props {
+  pub: Publication;
+}
+const { pub } = Astro.props;
+const bib = toBibtex(pub);
+const manyAuthors = pub.authors.length > 6;
+---
+
+<li class="pub" id={pub.id}>
+  <p class="mono year">{pub.year}</p>
+  <div class="main">
+    <h3>
+      {pub.doi ? <a href={doiUrl(pub.doi)}>{pub.title}</a> : pub.title}
+    </h3>
+    <p class="authors">
+      {
+        pub.authorsShort && manyAuthors ? (
+          pub.authorsShort
+        ) : pub.authorsShort && pub.type === 'report' ? (
+          pub.authorsShort
+        ) : (
+          pub.authors.map((a, i) => (
+            <>
+              {isMert(a) ? <strong>{a}</strong> : a}
+              {i < pub.authors.length - 1 ? ', ' : ''}
+            </>
+          ))
+        )
+      }
+    </p>
+    <p class="venue">
+      <em>{pub.venue}</em>{pub.details && <span>, {pub.details}</span>}
+      {pub.note && pub.note.length <= 24 && <span class="note mono">{pub.note}</span>}
+    </p>
+    {pub.note && pub.note.length > 24 && <p class="note-line">{pub.note}</p>}
+
+    <div class="row mono">
+      {pub.doi && <a href={doiUrl(pub.doi)}>DOI {pub.doi}</a>}
+      {pub.pdf && <a href={pub.pdf}>Free PDF</a>}
+      {pub.preprint && <a href={pub.preprint}>Preprint</a>}
+      {bib && <CopyButton text={bib} label="Copy BibTeX" />}
+    </div>
+
+    {
+      pub.abstract && (
+        <details>
+          <summary class="mono">Abstract</summary>
+          <p>{pub.abstract}</p>
+        </details>
+      )
+    }
+  </div>
+</li>
+
+<style>
+  .pub {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 18px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .year {
+    color: var(--ink-muted);
+    padding-top: 0.35em;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    line-height: 1.2;
+    max-width: 40ch;
+  }
+
+  h3 a {
+    text-decoration-color: transparent;
+  }
+
+  h3 a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .authors {
+    margin-top: 10px;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+
+  .authors strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .venue {
+    margin-top: 4px;
+    font-size: 0.95rem;
+  }
+
+  .note {
+    margin-left: 10px;
+    padding: 2px 7px;
+    border: 1px solid var(--rule-strong);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-style: normal;
+    white-space: nowrap;
+  }
+
+  .note-line {
+    margin-top: 4px;
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+  }
+
+  .row {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 22px;
+    font-size: var(--step--1);
+  }
+
+  .row a {
+    overflow-wrap: anywhere;
+  }
+
+  details {
+    margin-top: 14px;
+    max-width: 68ch;
+  }
+
+  summary {
+    cursor: pointer;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    width: fit-content;
+  }
+
+  summary:hover {
+    color: var(--ink);
+  }
+
+  details p {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 640px) {
+    .pub {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .year {
+      padding-top: 0;
+    }
+  }
+</style>

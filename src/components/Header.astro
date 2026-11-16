@@ -1,0 +1,103 @@
+---
+import Wordmark from './Wordmark.astro';
+import { nav } from '../data/site';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => href !== '/' && !href.includes('#') && path.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a href="/" class="home" aria-label="Lydion Energy, home"><Wordmark /></a>
+    <nav aria-label="Primary">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .bar {
+    min-height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .home {
+    text-decoration: none;
+    padding-block: 10px;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    gap: clamp(14px, 2.2vw, 30px);
+  }
+
+  nav a {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-decoration: none;
+    color: var(--ink-muted);
+    padding-block: 8px;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--ink);
+    border-bottom-color: currentColor;
+  }
+
+  @media (max-width: 760px) {
+    .bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding-top: 6px;
+    }
+
+    nav {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 4px;
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    ul {
+      gap: 14px;
+      justify-content: space-between;
+    }
+
+    nav a {
+      display: inline-block;
+      padding-block: 8px 10px;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import { publications, doiUrl } from '../data/publications';
+import ondfFig from '../assets/research/online-decentralised.png';
+import bessFig from '../assets/research/bess-early-activation.png';
+
+const byId = (id: string) => {
+  const p = publications.find((x) => x.id === id);
+  if (!p) throw new Error(`Missing publication ${id}`);
+  return p;
+};
+
+const featured = [
+  {
+    pub: byId('karacelebi2025ondf'),
+    summary:
+      'Instead of one model of the whole grid, several small neural ODEs learn from local measurements at large generators after a fault and forecast what happens next. Operators get a trajectory to act on, not just a stable or unstable flag.',
+    fig: ondfFig,
+    alt: 'Diagram of a transmission grid where three generators each run their own neural ODE and send parameters to the system operator for dynamics monitoring, security assessment and corrective control.',
+  },
+  {
+    pub: byId('karacelebi2025frequency'),
+    summary:
+      'A neural ODE trained on the disturbance while it happens, in near real time, predicts the frequency nadir. On the IEEE 39-bus system the forecast comes early enough to trigger a battery and avoid under-frequency load shedding.',
+    fig: bessFig,
+    alt: 'Frequency plot after a disturbance comparing battery activation by threshold with earlier activation triggered by the neural ODE forecast, which keeps frequency above the under-frequency load shedding limit.',
+  },
+  {
+    pub: byId('sevilla2026lowinertia'),
+    summary:
+      'A review from the IEEE working group on Big Data & Analytics for Transmission Systems: how low-inertia grids lose stability, which monitoring technology exists, and where data-driven methods help.',
+  },
+];
+---
+
+<section class="section" id="research" aria-labelledby="research-title">
+  <div class="wrap">
+    <SectionHead index="03" label="Research">
+      <h2 id="research-title">The methods are peer reviewed.</h2>
+      <p>
+        Lydion’s approach comes out of Mert’s research in the Intelligent Electrical Power Grids group at
+        TU Delft, published in the main power systems journals.
+      </p>
+    </SectionHead>
+
+    <ol class="list" role="list">
+      {
+        featured.map(({ pub, summary, fig, alt }) => (
+          <li class:list={['item', { 'no-fig': !fig }]}>
+            <div class="text">
+              <p class="mono meta">
+                <span>{pub.year}</span>
+                <span class="venue">{pub.venue}</span>
+              </p>
+              <h3>
+                <a href={pub.doi ? doiUrl(pub.doi) : undefined}>{pub.title}</a>
+              </h3>
+              <p class="summary">{summary}</p>
+              <p class="mono links">
+                {pub.doi && <a href={doiUrl(pub.doi)}>DOI</a>}
+                {pub.pdf && <a href={pub.pdf}>Free PDF</a>}
+                {pub.preprint && <a href={pub.preprint}>Preprint</a>}
+              </p>
+            </div>
+            {fig && (
+              <figure class="plate fig">
+                <Image src={fig} alt={alt ?? ''} widths={[480, 760, 1000]} sizes="(max-width: 900px) 92vw, 440px" />
+              </figure>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="more">
+      <a class="arrow-link" href="/research/">All publications</a>
+      <a class="arrow-link" href="/research/neural-dynamics/">The neural dynamics project</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .list {
+    list-style: none;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(24px, 4vw, 64px);
+    padding: clamp(28px, 4vw, 48px) 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+
+  .no-fig .text {
+    grid-column: 1 / -1;
+    max-width: 52rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    color: var(--ink-muted);
+  }
+
+  .venue {
+    color: var(--ink-faint);
+  }
+
+  h3 {
+    margin-top: 14px;
+    font-size: var(--step-3);
+    line-height: 1.12;
+    max-width: 24ch;
+  }
+
+  h3 a {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.35s var(--ease);
+  }
+
+  h3 a:hover {
+    background-size: 100% 1px;
+  }
+
+  .summary {
+    margin-top: 16px;
+    color: var(--ink-muted);
+    max-width: 38rem;
+  }
+
+  .links {
+    margin-top: 18px;
+    display: flex;
+    gap: 22px;
+  }
+
+  .fig {
+    margin: 0;
+  }
+
+  .more {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 32px;
+  }
+
+  @media (max-width: 900px) {
+    .item {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

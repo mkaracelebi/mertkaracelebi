@@ -1,0 +1,45 @@
+---
+interface Props {
+  text: string;
+  label?: string;
+  copiedLabel?: string;
+  class?: string;
+}
+const { text, label = 'Copy', copiedLabel = 'Copied', class: className } = Astro.props;
+---
+
+<button type="button" class:list={['copy-btn', className]} data-copy={text} data-label={label} data-copied={copiedLabel}>
+  <span data-copy-text>{label}</span>
+</button>
+
+<script>
+  import { bindCopyButtons } from '../scripts/copy';
+  bindCopyButtons();
+</script>
+
+<style>
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px solid var(--rule-strong);
+    padding: 6px 11px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .copy-btn:hover {
+    border-color: var(--ink);
+  }
+
+  .copy-btn[data-state='done'] {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+</style>

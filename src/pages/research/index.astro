@@ -1,0 +1,296 @@
+---
+import Base from '../../layouts/Base.astro';
+import PublicationItem from '../../components/PublicationItem.astro';
+import { publications, groups, doiUrl } from '../../data/publications';
+import { site } from '../../data/site';
+
+const themes = [
+  {
+    title: 'Online neural dynamics forecasting',
+    body: 'Neural ordinary differential equations trained on post-fault measurements while an event unfolds, to forecast frequency and other states and trigger corrective control in time.',
+    href: '/research/neural-dynamics/',
+  },
+  {
+    title: 'Contingency screening and cascading failures',
+    body: 'Reinforcement learning that ranks N-k contingencies under a fixed computation budget, and probabilistic estimates of blackout risk.',
+  },
+  {
+    title: 'Machine learning with digital twins',
+    body: 'How high-fidelity simulation models and fast learned surrogates can be combined for monitoring and control of dynamic security.',
+  },
+  {
+    title: 'Low-inertia grids',
+    body: 'Monitoring technology, stability challenges and data-driven methods for systems dominated by power electronics, with the IEEE PES working group on Big Data & Analytics for Transmission Systems.',
+  },
+];
+
+const jsonLd = publications
+  .filter((p) => p.doi)
+  .map((p) => ({
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline: p.title,
+    datePublished: String(p.year),
+    author: p.authors.map((name) => ({ '@type': 'Person', name })),
+    isPartOf: { '@type': 'Periodical', name: p.venue },
+    sameAs: doiUrl(p.doi!),
+  }));
+---
+
+<Base
+  title="Research"
+  description="Publications by Mert Karaçelebi on AI for power system dynamics and security: neural ODEs, dynamic security assessment, contingency screening and low-inertia grids."
+  jsonLd={jsonLd}
+>
+  <section class="intro">
+    <div class="wrap grid">
+      <p class="label crumb"><a href="/">Lydion Energy</a> <span aria-hidden="true">/</span> Research</p>
+      <div class="head">
+        <h1>Research</h1>
+        <blockquote>
+          <p>
+            “Can future dynamics be learned and predicted without knowing when, where, or what disturbance
+            occurred?”
+          </p>
+          <footer class="mono">The central question of the neural dynamics project, TU Delft</footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="themes-title">
+    <div class="wrap grid">
+      <h2 id="themes-title" class="label side">Themes</h2>
+      <ol class="themes" role="list">
+        {
+          themes.map((t, i) => (
+            <li>
+              <span class="mono n">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{t.href ? <a href={t.href}>{t.title}</a> : t.title}</h3>
+                <p>{t.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {
+    groups.map((g) => {
+      const items = publications.filter((p) => p.type === g.type);
+      if (!items.length) return null;
+      return (
+        <section class="section pubs" aria-labelledby={`g-${g.type}`}>
+          <div class="wrap grid">
+            <h2 id={`g-${g.type}`} class="label side">
+              {g.label} <span class="count">{items.length}</span>
+            </h2>
+            <ol class="list" role="list">
+              {items.map((p) => (
+                <PublicationItem pub={p} />
+              ))}
+            </ol>
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section class="section" aria-labelledby="talks-title">
+    <div class="wrap grid">
+      <h2 id="talks-title" class="label side">Talks, teaching, supervision</h2>
+      <ul class="plain" role="list">
+        <li>
+          <span class="mono yr">2026</span>
+          <span>
+            Panel speaker at IEEE SGSMA 2026, Santiago de Chile. Presented IEEE PES TR-140 for the working group,
+            and “Neural Ordinary Differential Equations for Forecasting Power System Dynamics”.
+          </span>
+        </li>
+        <li>
+          <span class="mono yr">TU Delft</span>
+          <span>
+            Supervised MSc theses on probabilistic risk estimation, including “Probabilistic Framework for
+            Assessing Cascading Failures in Power Systems” (A. Rajagopal, 2025), and on AI-based emergency
+            frequency control.
+          </span>
+        </li>
+        <li>
+          <span class="mono yr">2024</span>
+          <span>Organising committee, DynPOWER 2024, international workshop on dynamic stability challenges of future power grids, Delft.</span>
+        </li>
+        <li>
+          <span class="mono yr">TU Delft</span>
+          <span>Co-developed the MSc course EE4C12 Machine Learning for Electrical Engineering and served as one of its head teaching assistants.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="profiles-title">
+    <div class="wrap grid">
+      <h2 id="profiles-title" class="label side">Profiles</h2>
+      <p class="profiles mono">
+        <a href={site.links.orcid}>ORCID 0000-0002-5810-5791</a>
+        <a href={site.links.repository}>TU Delft repository</a>
+        {site.links.scholar && <a href={site.links.scholar}>Google Scholar</a>}
+        <a href={site.links.nodeProject}>Interactive NODE project site</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro {
+    padding-block: clamp(56px, 8vw, 120px) clamp(48px, 6vw, 88px);
+  }
+
+  .crumb {
+    grid-column: 1 / span 3;
+    padding-top: 1.2em;
+  }
+
+  .crumb a {
+    text-decoration: none;
+  }
+
+  .crumb a:hover {
+    text-decoration: underline;
+  }
+
+  .head {
+    grid-column: 4 / -1;
+  }
+
+  h1 {
+    font-size: var(--step-5);
+  }
+
+  blockquote {
+    margin: clamp(28px, 4vw, 48px) 0 0;
+    padding-left: clamp(16px, 2vw, 28px);
+    border-left: 2px solid var(--accent);
+    max-width: 44rem;
+  }
+
+  blockquote p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-3);
+    line-height: 1.2;
+  }
+
+  blockquote footer {
+    margin-top: 16px;
+    color: var(--ink-muted);
+  }
+
+  .side {
+    grid-column: 1 / span 3;
+    padding-top: 0.3em;
+  }
+
+  .count {
+    color: var(--accent-ink);
+    margin-left: 0.4em;
+  }
+
+  .themes,
+  .list,
+  .plain,
+  .profiles {
+    grid-column: 4 / -1;
+  }
+
+  .themes {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px clamp(24px, 4vw, 56px);
+  }
+
+  .themes li {
+    display: grid;
+    grid-template-columns: 2.4em 1fr;
+    gap: 8px;
+    border-top: 1px solid var(--rule-strong);
+    padding-top: 18px;
+  }
+
+  .themes .n {
+    color: var(--accent-ink);
+    padding-top: 0.3em;
+  }
+
+  .themes h3 {
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+
+  .themes p {
+    margin-top: 10px;
+    color: var(--ink-muted);
+    font-size: 0.97rem;
+  }
+
+  .list {
+    list-style: none;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .pubs {
+    padding-block: clamp(48px, 6vw, 88px);
+  }
+
+  .plain {
+    list-style: none;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .plain li {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .yr {
+    color: var(--ink-muted);
+  }
+
+  .profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+  }
+
+  @media (max-width: 900px) {
+    .crumb,
+    .head,
+    .side,
+    .themes,
+    .list,
+    .plain,
+    .profiles {
+      grid-column: 1 / -1;
+    }
+
+    .side {
+      margin-bottom: 18px;
+    }
+
+    .themes {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .plain li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

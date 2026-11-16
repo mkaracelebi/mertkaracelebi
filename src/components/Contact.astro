@@ -1,0 +1,122 @@
+---
+import SectionHead from './SectionHead.astro';
+import CopyButton from './CopyButton.astro';
+import { site } from '../data/site';
+
+const links = [
+  { label: 'LinkedIn', href: site.links.linkedin },
+  { label: 'Google Scholar', href: site.links.scholar },
+  { label: 'ORCID', href: site.links.orcid },
+  { label: 'TU Delft repository', href: site.links.repository },
+].filter((l) => l.href);
+
+const subject = encodeURIComponent('Enquiry via lydion website');
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <SectionHead index="05" label="Contact">
+      <h2 id="contact-title">Work with Lydion.</h2>
+      <p>
+        Send a short note on the grid, the model or the question, your timeline, and what you need
+        delivered.
+      </p>
+    </SectionHead>
+
+    <div class="grid">
+      <div class="primary">
+        {
+          site.email && (
+            <>
+              <a class="email" href={`mailto:${site.email}?subject=${subject}`}>
+                {site.email}
+              </a>
+              <div class="actions">
+                <CopyButton text={site.email} label="Copy address" />
+              </div>
+            </>
+          )
+        }
+      </div>
+
+      <dl class="side mono">
+        <div>
+          <dt>Elsewhere</dt>
+          <dd>
+            <ul role="list">
+              {links.map((l) => (
+                <li>
+                  <a href={l.href} rel="me noopener">{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+        <div>
+          <dt>Based in</dt>
+          <dd>{site.location}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .primary {
+    grid-column: 4 / span 6;
+  }
+
+  .email {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 0.9rem + 2.4vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+    overflow-wrap: break-word;
+  }
+
+  .email:hover {
+    color: var(--accent-ink);
+  }
+
+  .actions {
+    margin-top: 22px;
+  }
+
+  .side {
+    grid-column: 10 / span 3;
+    margin: 0;
+    display: grid;
+    gap: 26px;
+    align-content: start;
+  }
+
+  dt {
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  dd {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  ul {
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+
+  @media (max-width: 900px) {
+    .primary,
+    .side {
+      grid-column: 1 / -1;
+    }
+
+    .side {
+      margin-top: 44px;
+    }
+  }
+</style>
