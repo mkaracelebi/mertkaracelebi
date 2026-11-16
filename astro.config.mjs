@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // TODO(Mert): set the final domain. It drives canonical URLs, Open Graph tags and the sitemap.
-const SITE_URL = 'https://lydion.energy';
+const SITE_URL = 'https://lydionenergy.nl';
 
 export default defineConfig({
   site: SITE_URL,
