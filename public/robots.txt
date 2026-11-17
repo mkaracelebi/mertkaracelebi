@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# Update the host if the final domain differs.
-Sitemap: https://lydionenergy.nl/sitemap-index.xml
+# Keep the host in step with SITE_URL in astro.config.mjs.
+Sitemap: https://mert.lydionenergy.nl/sitemap-index.xml
