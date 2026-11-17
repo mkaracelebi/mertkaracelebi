@@ -11,10 +11,7 @@ const mark = markSvg({ variant: 'line', strokePx: 1.2, title: 'Lydion Energy mar
 
   <div class="wrap hero-inner">
     <p class="label kicker">{site.name} <span aria-hidden="true">·</span> {site.locationShort}</p>
-    <h1 id="hero-title">
-      Software and studies at the intersection of <em>artificial intelligence</em> and power system
-      <em>dynamics</em>.
-    </h1>
+    <h1 id="hero-title">Software and studies at the intersection of <em>artificial intelligence</em> and <em>power system dynamics</em>.</h1>
     <p class="lede">
       {site.name} is the independent practice of {site.founder.name}, a power systems engineer whose
       PhD research at TU Delft applies artificial intelligence to power system dynamics. Lydion offers
@@ -104,6 +101,7 @@ const mark = markSvg({ variant: 'line', strokePx: 1.2, title: 'Lydion Energy mar
   h1 em {
     font-style: italic;
     letter-spacing: -0.01em;
+    padding-right: 0.05em; /* room for the italic overhang before the next word */
   }
 
   .lede {
