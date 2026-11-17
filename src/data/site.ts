@@ -25,7 +25,7 @@ export const site = {
   // Dutch businesses must show these on their website once registered.
   company: {
     kvk: '42159938',
-    btw: '', // TODO(Mert): VAT number
+    btw: 'NL005544343B17',
   },
 
   founder: {
