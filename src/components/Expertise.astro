@@ -11,6 +11,7 @@ const fields = [
       'Online dynamics forecasting from local measurements',
       'ML surrogates and digital twins for dynamic security assessment',
       'Reinforcement learning for N-k contingency ranking',
+      'LLM integration for custom energy system planning and analysis',
       'Mathematical optimisation',
     ],
     tools: 'PyTorch, TensorFlow, SciML, scikit-learn, Pyomo, YALMIP',
@@ -28,18 +29,6 @@ const fields = [
     ],
     tools: 'DIgSILENT PowerFactory, PSS Sincal, MATLAB and Simulink, MATPOWER, PowerSimulationsDynamics.jl',
   },
-];
-
-const rows = [
-  ['What is solved', 'Fundamental-frequency phasors', 'Instantaneous three-phase waveforms'],
-  ['Time step', 'Milliseconds', 'Microseconds'],
-  ['Typical horizon', 'Seconds to minutes', 'Milliseconds to seconds'],
-  ['Scope', 'Whole systems, thousands of buses', 'A plant, a corridor, a converter and its neighbours'],
-  [
-    'Questions it answers',
-    'Frequency nadir, rotor-angle and voltage stability, damping of slow oscillations',
-    'Converter control interactions, weak-grid behaviour, fault ride-through detail, sub-synchronous and harmonic effects',
-  ],
 ];
 ---
 
@@ -69,38 +58,6 @@ const rows = [
         ))
       }
     </div>
-
-    <figure class="compare">
-      <figcaption class="grid">
-        <span class="label cap-label">Field note</span>
-        <span class="cap-text">
-          <strong>RMS or EMT?</strong> Most projects need both: RMS to find where the risk is, EMT to see
-          what actually happens there.
-        </span>
-      </figcaption>
-      <div class="table-scroll" tabindex="0" role="region" aria-label="RMS and EMT studies compared">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col"><span class="visually-hidden">Aspect</span></th>
-              <th scope="col">RMS <span class="muted">(phasor)</span></th>
-              <th scope="col">EMT <span class="muted">(electromagnetic transient)</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              rows.map(([k, rms, emt]) => (
-                <tr>
-                  <th scope="row">{k}</th>
-                  <td data-label="RMS">{rms}</td>
-                  <td data-label="EMT">{emt}</td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
-    </figure>
   </div>
 </section>
 
@@ -154,126 +111,9 @@ const rows = [
     margin-right: 0.8em;
   }
 
-  .compare {
-    margin: clamp(64px, 8vw, 112px) 0 0;
-  }
-
-  figcaption {
-    row-gap: 10px;
-    margin-bottom: 26px;
-    align-items: baseline;
-  }
-
-  .cap-label {
-    grid-column: 1 / span 3;
-  }
-
-  .cap-text {
-    grid-column: 4 / -1;
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    line-height: 1.35;
-    max-width: 38ch;
-  }
-
-  .cap-text strong {
-    font-weight: 400;
-    font-style: italic;
-  }
-
-  .table-scroll {
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    min-width: 640px;
-    border-collapse: collapse;
-    font-size: 0.97rem;
-  }
-
-  th,
-  td {
-    text-align: left;
-    vertical-align: top;
-    padding: 14px 18px 14px 0;
-    border-top: 1px solid var(--rule);
-  }
-
-  thead th {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    font-weight: 500;
-    border-top: 1px solid var(--rule-strong);
-    padding-bottom: 12px;
-  }
-
-  tbody th {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    font-weight: 400;
-    color: var(--ink-muted);
-    width: 22%;
-  }
-
-  td {
-    width: 39%;
-  }
-
-  @media (max-width: 640px) {
-    table {
-      min-width: 0;
-    }
-
-    thead {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-    }
-
-    tr {
-      display: grid;
-      grid-template-columns: 3.2em 1fr;
-      column-gap: 12px;
-      padding: 14px 0;
-      border-top: 1px solid var(--rule);
-    }
-
-    tbody th {
-      grid-column: 1 / -1;
-      width: auto;
-      border: 0;
-      padding: 0 0 8px;
-    }
-
-    td {
-      display: contents;
-    }
-
-    td::before {
-      content: attr(data-label);
-      font-family: var(--font-mono);
-      font-size: var(--step--2);
-      letter-spacing: 0.06em;
-      color: var(--accent-ink);
-      padding: 4px 0;
-    }
-
-    td {
-      width: auto;
-    }
-  }
-
   @media (max-width: 900px) {
     .fields {
       grid-template-columns: 1fr;
-    }
-
-    .cap-label,
-    .cap-text {
-      grid-column: 1 / -1;
     }
   }
 </style>

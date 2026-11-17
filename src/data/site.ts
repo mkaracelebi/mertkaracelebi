@@ -3,13 +3,13 @@
 
 export const site = {
   name: 'Lydion Energy',
-  tagline: 'Software and studies for power system dynamics.',
+  tagline: 'AI solutions for power and energy systems.',
   description:
     'Lydion Energy builds power system software, runs RMS and EMT stability studies, and advises on AI in energy systems. Founded by Mert Karaçelebi, power systems researcher at TU Delft.',
   location: 'Rotterdam, the Netherlands',
   locationShort: 'Rotterdam, NL',
 
-  email: 'mert.karacelebi@gmail.com',
+  email: 'mkaracelebi@lydionenergy.nl',
   // Kept out of the page on purpose. Fill in only if Mert wants a phone number public.
   phone: '',
 
