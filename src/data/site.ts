@@ -24,7 +24,7 @@ export const site = {
 
   // Dutch businesses must show these on their website once registered.
   company: {
-    kvk: '', // TODO(Mert): Chamber of Commerce number
+    kvk: '42159938',
     btw: '', // TODO(Mert): VAT number
   },
 
