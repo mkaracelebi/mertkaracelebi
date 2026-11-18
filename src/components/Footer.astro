@@ -29,7 +29,6 @@ const { kvk, btw } = site.company;
 
     <div class="meta mono">
       <p>© {year} {site.name}</p>
-      <p class="muted">Photo of Mert at the whiteboard: {site.photoCredit}.</p>
       <button class="theme-toggle" type="button" data-theme-toggle aria-live="polite">
         <span class="tt-dot" aria-hidden="true"></span>
         <span data-theme-label>Switch theme</span>
@@ -118,10 +117,6 @@ const { kvk, btw } = site.company;
     display: grid;
     gap: 10px;
     justify-items: start;
-  }
-
-  .meta p + p {
-    margin-top: 0;
   }
 
   .theme-toggle {
